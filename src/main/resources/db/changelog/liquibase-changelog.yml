@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/create-invoice-table.xml
+
+  - include:
+      file: db/changelog/create-mission-order-table.xml
+
+  - include:
+      file: db/changelog/create-part-table.xml

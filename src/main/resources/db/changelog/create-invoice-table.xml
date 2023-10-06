@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="02" author="KCO177">
+        <createTable tableName="invoice_sorting">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mission_order_id" type="varchar(255)">
+                <constraints foreignKeyName="mission_order" nullable="false"/>
+            </column>
+            <column name="invoice_number" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="date" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cost_invoice" type="double precision">
+                <constraints nullable="false"/>
+            </column>
+            <column name="part" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="part_number_invoice" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="amount_inv" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="sorting_time" type="double precision">
+                <constraints nullable="true"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
