@@ -161,7 +161,7 @@ class InvoiceMissionOrderController(
     @GetMapping("/{mo}")
     fun findByMissionOrderId(@PathVariable mo: String): Iterable<ViewInvoice> =
         invoiceMissionOrder.search(mo).map{it.toView()}
-}
+    }
 
 
 //base rest controller to get and post invoice
