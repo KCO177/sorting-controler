@@ -3,7 +3,9 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
+import org.springframework.data.repository.query.Param
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -90,29 +92,40 @@ fun MissionOrder.toView()=
 fun InvoiceSorting.toView()=
     ViewInvoice(mission_order_id, invoice_number, date, cost_invoice, part, part_number_invoice, amount_inv, sorting_time)
 
+
 interface MissionOrderTableRepository: CrudRepository<MissionOrder, Long> {
 }
-//   fun findMissionOrderId(mo: String): List<MissionOrder>
+
+// search for current mission order
+interface MissionOrderCurrentRepository : CrudRepository<MissionOrder, Long> {
+    @Query(
+        "SELECT a FROM MissionOrder a WHERE a.mission_order_id LIKE CONCAT('%', :suffix, '%')"
+    )
+    fun search(@Param("suffix") suffix: String): Iterable<MissionOrder>
+}
+
+// search for invoices for current mission order
+interface InvoiceforMissionOrderRepository : CrudRepository<InvoiceSorting, Long> {
+    @Query(
+        "SELECT a FROM InvoiceSorting a WHERE a.mission_order_id LIKE CONCAT('%', :suffix, '%')"
+    )
+    fun search(@Param("suffix") suffix: String): Iterable<InvoiceSorting>
+}
 
 
 interface InvoiceSortingTableRepository: CrudRepository<InvoiceSorting, Long> {
 }
 
+//base rest controller for get and post mission order
 @RestController
 @RequestMapping("mo")
 class MissionOrderController(
-    val missionOrderRepository : MissionOrderTableRepository
+    val missionOrderRepository : MissionOrderTableRepository,
     ){
     @GetMapping("all")
     fun findAll(): Iterable<ViewMission> =
         missionOrderRepository.findAll().map { it.toView()}
-/*
-    @GetMapping("/{mo}")
-    fun findByMissionOrderId(@PathVariable mo: String): ViewMission? {
-        val missionOrder = missionOrderRepository.findMissionOrderId(mo).firstOrNull()
-        return missionOrder?.toView()
-    }
-*/
+
     @PostMapping("post")
     fun create(@RequestBody createMission: CreateMissionOrder) =
         missionOrderRepository.save(
@@ -128,14 +141,38 @@ class MissionOrderController(
             )
         ).toView()
 }
+//rest controller to find current mission order
+@RestController
+@RequestMapping("findmo")
+class CurrentMissionOrderController(
+    val missionOrderCurrentRepository: MissionOrderCurrentRepository
+) {
+    @GetMapping("/{mo}")
+    fun findByMissionOrderId(@PathVariable mo: String): Iterable<ViewMission> =
+        missionOrderCurrentRepository.search(mo).map{it.toView()}
+    }
+
+// rest controller to get invoices for current mission order
+@RestController
+@RequestMapping("findinvformo")
+class InvoiceMissionOrderController(
+    val invoiceMissionOrder: InvoiceforMissionOrderRepository
+) {
+    @GetMapping("/{mo}")
+    fun findByMissionOrderId(@PathVariable mo: String): Iterable<ViewInvoice> =
+        invoiceMissionOrder.search(mo).map{it.toView()}
+}
+
+
+//base rest controller to get and post invoice
 @RestController
 @RequestMapping("inv")
 class InvoiceSortingController(
-    val invoiceSortingRepository : InvoiceSortingTableRepository
-){
+    val invoiceSortingRepository: InvoiceSortingTableRepository
+) {
     @GetMapping()
     fun findAll(): Iterable<ViewInvoice> =
-        invoiceSortingRepository.findAll().map { it.toView()}
+        invoiceSortingRepository.findAll().map { it.toView() }
 
     @PostMapping("post")
     fun create(@RequestBody createInvoice: CreateInvoice) =
@@ -146,11 +183,12 @@ class InvoiceSortingController(
                 date = createInvoice.date,
                 cost_invoice = createInvoice.cost_invoice,
                 part = createInvoice.part,
-                part_number_invoice=createInvoice.part_number_invoice,
-                amount_inv=createInvoice.amount_inv,
+                part_number_invoice = createInvoice.part_number_invoice,
+                amount_inv = createInvoice.amount_inv,
                 sorting_time = createInvoice.sorting_time
             )
         ).toView()
 }
+
 
 
