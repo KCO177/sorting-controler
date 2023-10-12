@@ -1,5 +1,7 @@
 package com.example.sortingcontroller.rest
 
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -16,6 +18,14 @@ class db_controllerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
+    @Autowired
+    private lateinit var missionOrderRepository: MissionOrderTableRepository // Replace MissionOrderRepository with your actual repository
+
+    @AfterEach
+    fun clearDatabase() {
+        missionOrderRepository.deleteMissionOrderById("MO123")
+    }
+
     //Test the findAll() endpoint
     @Test
     fun testFindAllMissionOrders() {
@@ -24,6 +34,7 @@ class db_controllerTest {
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         // Add more assertions as needed to validate the response
     }
+
 
     // Test the "create" endpoint
     @Test
@@ -43,6 +54,9 @@ class db_controllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(createMissionJson))
             .andExpect(MockMvcResultMatchers.status().isOk)
+
+
+
         // Add more assertions as needed to validate the response
 
         // Optionally, you can query the database or repository to verify the saved data
@@ -56,6 +70,16 @@ class InvoiceSortingControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
+
+    /* // PŘEDĚLAT PRO INVOICE
+    @Autowired
+    private lateinit var missionOrderRepository: MissionOrderTableRepository // Replace MissionOrderRepository with your actual repository
+
+    @AfterEach
+    fun clearDatabase() {
+        missionOrderRepository.deleteMissionOrderById("MO123")
+    }
+   */
 
     // Test the "findAll" endpoint for InvoiceSortingController
     @Test
