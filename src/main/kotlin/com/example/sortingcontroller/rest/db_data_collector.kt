@@ -8,7 +8,7 @@ class db_data_collector {
         var totalCostInvoice = 0.0
         // call rest function find all invoices to current MO (MO:INV; 1:N)
         val restTemplate = RestTemplate()
-        val url = "http://localhost:8080/findinvformo/{mo}"
+        val url = "http://localhost:8080/inv/findinvformo/{mo}"
         val response = restTemplate.getForObject(url, List::class.java, mo)
 
         //map the JSON response to values
@@ -32,7 +32,7 @@ class db_data_collector {
         var totalCostMo = 0.0
         // call rest function find all invoices to current MO (MO:INV; 1:N)
         val restTemplate = RestTemplate()
-        val url = "http://localhost:8080/findmo/{mo}"
+        val url = "http://localhost:8080/mo/findmo/{mo}"
         val response = restTemplate.getForObject(url, List::class.java, mo)
 
         //map the JSON response to values
