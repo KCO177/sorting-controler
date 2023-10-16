@@ -14,5 +14,6 @@ val calculate = Calculate()
 val mo = "MO3"
 calculate.calculateDiffInvMo(mo)
 val part = "GB"
-calculate.calculateSortTact(part)
+val amount_of_parts : Int = 100
+calculate.calculateSortTact(part, amount_of_parts)
 }

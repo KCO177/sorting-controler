@@ -15,10 +15,10 @@ class Calculate {
     }
 
     //calculate sorting tact from part and amount
-    fun calculateSortTact(part : String){
+    fun calculateSortTact(part : String, amountOfPart : Int){
         val timeToSort = db_collector.get_part_value_to_sort(part, "time_to_sort")
         val timeToManipulation = db_collector.get_part_value_to_sort(part, "time_to_manipulation")
-        val amountOfPart = 100
+        //val amountOfPart = 100
 
         //val amountOfPartMo = db_collector.get_mission_order_regarding_mo(mo, "amount_mo")
         val sec : Double = amountOfPart * (timeToSort + timeToManipulation)

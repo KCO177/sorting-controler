@@ -144,6 +144,16 @@ data class UpdateInvoice(
 
 )
 
+data class UpdatePart(
+    val id : Long?,
+    val part_number : String?,
+    val part_number_customer : String?,
+    val part_name : String?,
+    val part_shortcut : String?,
+    val time_to_sort : Double?,
+    val time_to_manipulation : Double?
+)
+
 fun MissionOrder.toView()=
     ViewMission(mission_order_id, date, cost_mission_order, part, part_number_mission_order, time_tact,  amount_mo)
 
@@ -212,6 +222,14 @@ interface PartRepository : CrudRepository<PartTable, Long> {
         "SELECT a FROM PartTable a WHERE (a.part_number LIKE CONCAT('%', :suffix, '%')) OR (a.part_number_customer LIKE CONCAT('%', :suffix, '%')) OR (a.part_name LIKE CONCAT('%', :suffix, '%')) OR (a.part_shortcut LIKE CONCAT('%', :suffix, '%'))"
     )
     fun searchPart(@Param("suffix") suffix: String): List<PartTable>
+
+    // delete invoice
+    @Modifying
+    @Transactional
+    @Query(
+        "DELETE FROM PartTable a WHERE (a.part_number LIKE CONCAT('%', :suffix, '%')) OR (a.part_number_customer LIKE CONCAT('%', :suffix, '%')) OR (a.part_name LIKE CONCAT('%', :suffix, '%')) OR (a.part_shortcut LIKE CONCAT('%', :suffix, '%'))"
+    )
+    fun deletePart(@Param("suffix") suffix: String)
 }
 //rest controller for mission order
 @RestController
@@ -353,7 +371,6 @@ class PartController(
     fun findAllParts(): Iterable<ViewPart> =
         partRepository.findAll().map { it.toView() }
 
-
     @GetMapping("{part}")
     fun findPart(@PathVariable part: String): Iterable<ViewPart> {
         val partTableList = partRepository.searchPart(part)
@@ -364,15 +381,59 @@ class PartController(
     fun create(@RequestBody createPart: CreatePart) =
         partRepository.save(
             PartTable(
-                part_number =createPart.part_number,
-                part_number_customer =createPart.part_number_customer,
-                part_name =createPart.part_name,
-                part_shortcut =createPart.part_shortcut,
-                time_to_sort =createPart.time_to_sort,
-                time_to_manipulation =createPart.time_to_manipulation)
+                part_number = createPart.part_number,
+                part_number_customer = createPart.part_number_customer,
+                part_name = createPart.part_name,
+                part_shortcut = createPart.part_shortcut,
+                time_to_sort = createPart.time_to_sort,
+                time_to_manipulation = createPart.time_to_manipulation
+            )
         ).toView()
 
+    @DeleteMapping("del/{part}")
+    fun deleteByInvId(@PathVariable part: String): ResponseEntity<String> {
+        partRepository.deletePart(part)
+        return ResponseEntity.ok("Part $part deleted successfully")
     }
+
+    @PutMapping("update/{part}")
+    fun updateMissionOrder(
+        @PathVariable part: String,
+        @RequestBody updatePart: UpdatePart
+    ): ResponseEntity<List<ViewPart>> {
+        val existingParts = partRepository.searchPart(part).toList()
+
+        if (existingParts.isNotEmpty()) {
+            val updatedParts = existingParts.map { existingPart ->
+                val updatedPart = existingPart.copy(
+                    part_number = updatePart.part_number ?: existingPart.part_number,
+                    part_number_customer = updatePart.part_number_customer ?: existingPart.part_number_customer,
+                    part_name = updatePart.part_name ?: existingPart.part_name,
+                    part_shortcut = updatePart.part_shortcut ?: existingPart.part_shortcut,
+                    time_to_sort = updatePart.time_to_sort ?: existingPart.time_to_sort,
+                    time_to_manipulation = updatePart.time_to_manipulation ?: existingPart.time_to_manipulation,
+                )
+                partRepository.save(updatedPart)
+            }
+
+            // Check if any updated parts are not null
+            val nonNullUpdatedParts = updatedParts.filterNotNull()
+
+            if (nonNullUpdatedParts.isNotEmpty()) {
+                // Assuming you have a conversion function from PartTable to ViewPart
+                val viewParts = nonNullUpdatedParts.map { it.toView() }
+                return ResponseEntity.ok(viewParts)
+            }
+        }
+
+        return ResponseEntity.notFound().build()
+    }
+}
+
+
+
+
+
 
 
 
