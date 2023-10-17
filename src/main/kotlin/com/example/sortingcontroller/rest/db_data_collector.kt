@@ -1,14 +1,15 @@
 package com.example.sortingcontroller.rest
 import org.springframework.web.client.RestTemplate
 
-class db_data_collector {
-    /*  vyměnit proměnná pro  ..localhost:8080..*/
+class db_data_collector() {
+    // TODO vvtáhnout urlIndex do settings
+    val urlIndex = "http://localhost:8080/"
 
     fun get_invoice_costs_for_mo(mo: String): Double {
         var totalCostInvoice = 0.0
         // call rest function find all invoices to current MO (MO:INV; 1:N)
         val restTemplate = RestTemplate()
-        val url = "http://localhost:8080/inv/findinvformo/{mo}"
+        val url = "${urlIndex}inv/findinvformo/{mo}"
         val response = restTemplate.getForObject(url, List::class.java, mo)
 
         //map the JSON response to values
@@ -32,7 +33,7 @@ class db_data_collector {
         var totalValMo = 0.0
         // call rest function find MO regarding moId
         val restTemplate = RestTemplate()
-        val url = "http://localhost:8080/mo/findmo/{mo}"
+        val url = "$urlIndex/mo/findmo/{mo}"
         val response = restTemplate.getForObject(url, List::class.java, mo)
 
         //map the JSON response to values
@@ -54,7 +55,7 @@ class db_data_collector {
     fun get_part_value_to_sort(part: String, partValue: String): Double {
         // call rest function findPart partValue in constructor for time to sort or time to manipulation
         val restTemplate = RestTemplate()
-        val url = "http://localhost:8080/part/{part}"
+        val url = "$urlIndex/part/{part}"
         val response = restTemplate.getForObject(url, List::class.java, part)
         var partTime :Double = 0.0
 

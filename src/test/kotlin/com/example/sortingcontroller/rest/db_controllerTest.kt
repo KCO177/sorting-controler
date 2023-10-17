@@ -11,11 +11,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.http.MediaType
 import org.junit.jupiter.api.Assertions.*
-import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class db_controllerTest {
 
     @Autowired
@@ -24,28 +24,16 @@ class db_controllerTest {
     @Autowired
     private lateinit var missionOrderRepository: MissionOrderTableRepository
 
-    val mockMo : String = "MO123"
+    @Autowired
+    private lateinit var invoiceRepository: InvoiceSortingTableRepository
 
-    //After finish all test delete mock mockMo value from the database
-    @AfterAll
-    fun clearDatabase() {
-        // Code to delete mission orders after all test methods have run
-        missionOrderRepository.deleteMissionOrderById(mockMo)
-    }
+    val mockMo: String = "MO123"
+    val mockInv01: String = "INV123"
+    val mockInv02: String = "INV124"
+    val mockInv03: String = "INV125"
 
-    //Test the findAll() endpoint
-    //Find all mission orders in database and get all in JSON format
     @Test
-    fun testFindAllMissionOrders() {
-        mockMvc.perform(MockMvcRequestBuilders.get("/mo/all"))
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-        // Add more assertions as needed to validate the response
-    }
-
-    // Test the "create" endpoint
-    // Create mission order with mock mission order ID
-    @Test
+    @Order(1)
     fun testCreateMissionOrder() {
         val createMissionJson = """{
             "mission_order_id": "$mockMo",
@@ -66,96 +54,143 @@ class db_controllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
     }
 
-    // Test the "FindById" endpoint
-    // Find the mock mission order by mock ID
     @Test
-    fun testFindByMissionOrderId() {
-        val missionOrderController = MissionOrderController(missionOrderRepository)
-        val mockMvc: MockMvc = MockMvcBuilders.standaloneSetup(missionOrderController).build() // Replace yourController with your actual controller
-
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("/mo/findmo/$mockMo")
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andReturn()
-
-        val content = result.response.contentAsByteArray
-
-        // Use Jackson to parse the content
-        val objectMapper = ObjectMapper()
-        val missionOrders: List<MissionOrder> = objectMapper.readValue(content)
-        val missionOrder = missionOrders.firstOrNull()
-
-        // Test that the db contain the mock id value
-        val missionOrderId = missionOrder?.mission_order_id
-        assert(missionOrder != null)
-        assert(missionOrderId == mockMo)
-
-        // Test that the amount of part is whole number Int (there is no 0.x of parts)
-        val missionOrderAmount = missionOrder?.amount_mo
-        assert(missionOrder != null)
-        assert(value = missionOrderAmount is Int)
-
-        // Test that the timetact is in Double type
-        assert(missionOrder != null)
-        assert(missionOrder?.time_tact is Double)
-        assert(missionOrder?.time_tact == 2.5)// Replace with the expected value
-
-    }
-
-}
-
-@SpringBootTest
-@AutoConfigureMockMvc
-class InvoiceSortingControllerTest {
-
-    @Autowired
-    private lateinit var mockMvc: MockMvc
-
-    /* // PŘEDĚLAT PRO INVOICE*/
-
-    @Autowired
-    private lateinit var missionOrderRepository: MissionOrderTableRepository // Replace MissionOrderRepository with your actual repository
-
-    @AfterEach
-    fun clearDatabase() {
-        missionOrderRepository.deleteMissionOrderById("MO123")
-    }
-
-    // Test the "findAll" endpoint for InvoiceSortingController
-    @Test
-    fun testFindAllInvoiceSorting() {
-        mockMvc.perform(MockMvcRequestBuilders.get("/inv"))
+    @Order(2)
+    fun testFindAllMissionOrders() {
+        mockMvc.perform(MockMvcRequestBuilders.get("/mo/all"))
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         // Add more assertions as needed to validate the response
     }
 
-    // Test the "create" endpoint for InvoiceSortingController
     @Test
-    fun testCreateInvoiceSorting() {
-        val createInvoiceJson = """{
-            "mission_order_id": "MO123",
-            "invoice_number": "INV456",
-            "date": "2023-10-15",
-            "cost_invoice": 75.0,
-            "part": "Sample Part",
-            "part_number_invoice": "67890",
-            "amount_inv": 3,
-            "sorting_time": 1.8
-        }"""
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/inv/post")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(createInvoiceJson))
+    @Order(3)
+    fun testFindByMissionOrderId() {
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders.get("/mo/findmo/$mockMo")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
             .andExpect(MockMvcResultMatchers.status().isOk)
-        // Add more assertions as needed to validate the response
+            .andReturn()
 
-        // Optionally, you can query the database or repository to verify the saved data
-        // For example: assert that the created invoice sorting exists in the repository
+        val content = result.response.contentAsByteArray
+
+        val objectMapper = ObjectMapper()
+        val missionOrders: List<MissionOrder> = objectMapper.readValue(content)
+        val missionOrder = missionOrders.firstOrNull()
+
+        assertNotNull(missionOrder)
+        assertEquals(mockMo, missionOrder?.mission_order_id)
+        assertNotNull(missionOrder?.amount_mo)
+        assertTrue(missionOrder?.amount_mo is Int)
+        assertEquals(2.5, missionOrder?.time_tact)
+
+        // Add more assertions as needed
     }
+
+    @Test
+    @Order(4)
+    fun testCreateInvoiceSorting() {
+        val createInvoiceJson01 = """{
+        "mission_order_id": "$mockMo",
+        "invoice_number": "$mockInv01",
+        "date": "2023-10-15",
+        "cost_invoice": 75.0,
+        "part": "Sample Part",
+        "part_number_invoice": "67890",
+        "amount_inv": 3,
+        "sorting_time": 1.8
+    }"""
+
+        val createInvoiceJson02 = """{
+        "mission_order_id": "$mockMo",
+        "invoice_number": "$mockInv02",
+        "date": "2023-10-15",
+        "cost_invoice": 75.0,
+        "part": "Sample Part",
+        "part_number_invoice": "67890",
+        "amount_inv": 3,
+        "sorting_time": 1.8
+    }"""
+
+        val createInvoiceJson03 = """{
+        "mission_order_id": "$mockMo",
+        "invoice_number": "$mockInv03",
+        "date": "2023-10-15",
+        "cost_invoice": 75.0,
+        "part": "Sample Part",
+        "part_number_invoice": "67890",
+        "amount_inv": 3,
+        "sorting_time": 1.8
+    }"""
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/inv/post")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createInvoiceJson01)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/inv/post")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createInvoiceJson02)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/inv/post")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createInvoiceJson03)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+    }
+
+    @Test
+    @Order(5)
+    fun testFindAllInvoices() {
+        mockMvc.perform(MockMvcRequestBuilders.get("/inv/all"))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+
+    }
+
+    @Test
+    @Order(6)
+    fun testFindInvoicesForMissionOrder() {
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders.get("/inv/findinvformo/$mockMo")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
+
+        val content = result.response.contentAsString // Read the content as a String
+
+        val objectMapper = ObjectMapper()
+        val invoices: List<InvoiceSorting> = objectMapper.readValue(content)
+
+        // Assert that there are three JSON objects in the response
+        // Count the number of JSON objects (open curly braces) in the response
+        val numberOfJsonObjects = content.count { it == '{' }
+
+        // Assert that there are three JSON objects in the response
+        assertEquals(3, numberOfJsonObjects)
+
+    }
+
+
+
+    // After all tests are finished, delete mock data from the database
+    @AfterAll
+    fun clearDatabase() {
+        missionOrderRepository.deleteMissionOrderById(mockMo)
+        invoiceRepository.deleteInvoiceById(mockInv01)
+        invoiceRepository.deleteInvoiceById(mockInv02)
+        invoiceRepository.deleteInvoiceById(mockInv03)
+        }
 }
-
-
 
 
 

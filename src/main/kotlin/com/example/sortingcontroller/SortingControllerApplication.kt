@@ -10,8 +10,9 @@ class SortingControllerApplication
 
 fun main(args: Array<String>) {
     runApplication<SortingControllerApplication>(*args)
+
 val calculate = Calculate()
-val mo = "MO3"
+val mo = "MO2"
 calculate.calculateDiffInvMo(mo)
 val part = "GB"
 val amount_of_parts : Int = 100

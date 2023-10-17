@@ -318,7 +318,7 @@ class InvoiceSortingController(
         return ResponseEntity.ok("Mission Order deleted successfully")
     }
 
-    @PostMapping("post/inv")
+    @PostMapping("post")
     fun create(@RequestBody createInvoice: CreateInvoice) =
         invoiceRepository.save(  //invoiceSortingRepository
             InvoiceSorting(
