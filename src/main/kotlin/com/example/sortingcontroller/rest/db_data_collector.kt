@@ -28,8 +28,7 @@ class db_data_collector() {
         return totalCostInvoice
     }
 
-
-    fun get_mission_order_regarding_mo(mo: String, missionValue:String): Double {
+    fun get_mission_order_regarding_mo(mo: String): Double {
         var totalValMo = 0.0
         // call rest function find MO regarding moId
         val restTemplate = RestTemplate()
@@ -40,7 +39,7 @@ class db_data_collector() {
         if (response != null && response.isNotEmpty()) {
             for (moRecord in response) {
                 if (moRecord is Map<*, *>) {
-                    val valMo = moRecord[{missionValue}]
+                    val valMo = moRecord["cost_mission_order"]
                     if (valMo is Int){
                         valMo.toDouble()}
                     if (valMo is Double) {
@@ -49,6 +48,8 @@ class db_data_collector() {
                 }
             }
         }
+        println("total costs in mo $mo : $totalValMo")
+
         return totalValMo
     }
 

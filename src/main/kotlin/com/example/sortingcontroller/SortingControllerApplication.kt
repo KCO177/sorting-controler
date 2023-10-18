@@ -1,7 +1,6 @@
 package com.example.sortingcontroller
 
-import com.example.sortingcontroller.calculation.Calculate
-import com.example.sortingcontroller.rest.db_data_collector
+import com.example.sortingcontroller.service.Calculate
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
@@ -16,5 +15,5 @@ val mo = "MO2"
 calculate.calculateDiffInvMo(mo)
 val part = "GB"
 val amount_of_parts : Int = 100
-calculate.calculateSortTact(part, amount_of_parts)
+calculate.calculateSortTime(part, amount_of_parts)
 }

@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Assertions.*
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
+
+// TODO nesting tests to necessary ordered and default ordered
 class db_controllerTest {
 
     @Autowired
@@ -31,6 +33,8 @@ class db_controllerTest {
     val mockInv01: String = "INV123"
     val mockInv02: String = "INV124"
     val mockInv03: String = "INV125"
+    val mockSortingTime : Double = 8.5
+    val mockPartNumber: String = "Part123"
 
     @Test
     @Order(1)
@@ -83,9 +87,10 @@ class db_controllerTest {
         assertEquals(mockMo, missionOrder?.mission_order_id)
         assertNotNull(missionOrder?.amount_mo)
         assertTrue(missionOrder?.amount_mo is Int)
+        assertTrue(missionOrder?.cost_mission_order is Double)
         assertEquals(2.5, missionOrder?.time_tact)
 
-        // Add more assertions as needed
+
     }
 
     @Test
@@ -97,9 +102,9 @@ class db_controllerTest {
         "date": "2023-10-15",
         "cost_invoice": 75.0,
         "part": "Sample Part",
-        "part_number_invoice": "67890",
+        "part_number_invoice": "$mockPartNumber",
         "amount_inv": 3,
-        "sorting_time": 1.8
+        "sorting_time": $mockSortingTime
     }"""
 
         val createInvoiceJson02 = """{
@@ -168,10 +173,8 @@ class db_controllerTest {
 
         val content = result.response.contentAsString // Read the content as a String
 
-        val objectMapper = ObjectMapper()
-        val invoices: List<InvoiceSorting> = objectMapper.readValue(content)
-
         // Assert that there are three JSON objects in the response
+        // Read all invoices for one mo
         // Count the number of JSON objects (open curly braces) in the response
         val numberOfJsonObjects = content.count { it == '{' }
 
@@ -180,7 +183,35 @@ class db_controllerTest {
 
     }
 
+    @Test
+    @Order(7)
+    fun testFindInvoicesById() {
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders.get("/inv/findinvid/$mockInv01")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andReturn()
 
+        val content = result.response.contentAsString // Read the content as a String
+
+        val objectMapper = ObjectMapper()
+        val invoices: List<InvoiceSorting> = objectMapper.readValue(content)
+        val invoiceRecord: InvoiceSorting? = invoices.firstOrNull()
+
+
+        assertNotNull(invoiceRecord)
+        // amount_inv is Int
+        // part_number_invoice is "Part123"
+        // sorting_time is
+        assertEquals(mockMo, invoiceRecord?.mission_order_id)
+        assertNotNull(invoiceRecord?.amount_inv)
+        assertTrue(invoiceRecord?.amount_inv is Int)
+        assertTrue(invoiceRecord?.cost_invoice is Double)
+        assertEquals(mockPartNumber, invoiceRecord?.part_number_invoice)
+        assertEquals(mockSortingTime, invoiceRecord?.sorting_time)
+
+    }
 
     // After all tests are finished, delete mock data from the database
     @AfterAll
