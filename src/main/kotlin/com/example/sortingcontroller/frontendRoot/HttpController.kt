@@ -52,10 +52,10 @@ class HttpController(
     }
 
 
-
     @PostMapping("/manage")
-    fun manageMO(@RequestParam mo: String, model:Model): String {
-        val costDifferences: MutableList<Double> = model.getAttribute("costDifferences") as? MutableList<Double> ?: mutableListOf()
+    fun manageMO(@RequestParam mo: String, model: Model): String {
+        val costDifferences: MutableList<Double> =
+            model.getAttribute("costDifferences") as? MutableList<Double> ?: mutableListOf()
         if (!mo.isNullOrBlank()) {
             val calculate = Calculate()
             val costDifference = calculate.calculateDiffInvMo(mo)
@@ -95,22 +95,32 @@ class HttpController(
 
         model.addAttribute("ordersData", ordersData)
 
-        //find inputed mo value and calculate the differnece of cost for all merged invoices calculateDiffInvMo(mo)
         //>Manage Mission Orders<
         val costDifferences: MutableList<Double> = model.getAttribute("costDifferences") as? MutableList<Double> ?: mutableListOf()
+        val amountDifferences: MutableList<Double> = model.getAttribute("amountDifferences") as? MutableList<Double> ?: mutableListOf()
+
+
         if (!mo.isNullOrBlank()) {
             val calculate = Calculate()
+
+        //find inputed mo value and calculate the difference of cost for all merged invoices calculateDiffInvMo(mo)
             val costDifference = calculate.calculateDiffInvMo(mo)
             costDifferences.add(costDifference)
             model.addAttribute("costDifferences", costDifferences)
+
+        //find inputed mo value and calculate the difference of amount for all merged invoices calculateDiffInvMo(mo)
+            val amountDifference = calculate.calculateDifferencePartAmount(mo)
+            amountDifferences.add(amountDifference)
+            model.addAttribute("amountDifferences", amountDifference)
+
+        //find inputed mo value and calculate the difference of time for MO and merged invoices calculateDiffInvMo(mo)
+
+
         }
 
         return "index"
-        }
-
-
     }
-
+}
 
 
 
