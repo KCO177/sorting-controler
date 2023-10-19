@@ -21,7 +21,7 @@ class Calculate(){
     }
 
     //calculate amount of part difference
-   fun calculateDifferencePartAmount(mo_from_invoice: String):Double{
+    fun calculateDifferencePartAmount(mo_from_invoice: String):Double{
         //get values from mo and invoice s regarding mo Id
         val amount_invoice : Double = db_collector.get_invoice_value_for_mo(mo_from_invoice, "amount_inv")
         val amount_mo : Double = db_collector.get_mission_order_value_regarding_mo(mo_from_invoice, "amount_mo")
@@ -52,10 +52,15 @@ class Calculate(){
     }
 
     //calculate seconds per part from given values
-    fun calculateSecondPerPart(hours:Double, amount:Int): Double {
+    fun calculateSecondPerPart(hours:Double, amount: Double): Double {
         return hours * 3600/amount
     }
 
-
+    //calculate hours difference in mo and inv
+    fun calculateDiffSortingTimeInvMo(mo:String): Double {
+        val sortingTimeInv: Double = db_collector.get_invoice_value_for_mo(mo, "sorting_time")
+        val sortingTimeMo: Double = db_collector.get_mission_order_value_regarding_mo(mo, "time_tact")
+        return (sortingTimeInv - sortingTimeMo)
+    }
 
 }

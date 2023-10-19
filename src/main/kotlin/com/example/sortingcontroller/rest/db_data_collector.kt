@@ -5,6 +5,27 @@ class db_data_collector() {
     // TODO vvtáhnout urlIndex do settings
     val urlIndex = "http://localhost:8080/"
 
+    fun getInvoiceValueForInvoice(inv: String, requiredValue: String, defaultValue: Double = 0.0): Double {
+        // Call the rest function to find invoice regarding invoiceId
+        val restTemplate = RestTemplate()
+        val url = "$urlIndex/inv/findinvid/{inv}"
+        val response = restTemplate.getForObject(url, List::class.java, inv)
+
+        // Map the JSON response to values
+        if (response != null && response.isNotEmpty()) {
+            for (moRecord in response) {
+                if (moRecord is Map<*, *>) {
+                    val valMo = moRecord[requiredValue]
+                    if (valMo is Int) {
+                        return valMo.toDouble()
+                    }
+                }
+            }
+        }
+
+        return defaultValue  // Return the default value if the required value was not found
+    }
+
     //get Int, Double values from invoices records regarding mo Id
     fun get_invoice_value_for_mo(mo: String, requiredValue: String): Double {
         var totalValInvoice = 0.0
@@ -44,7 +65,7 @@ class db_data_collector() {
         if (response != null && response.isNotEmpty()) {
             for (moRecord in response) {
                 if (moRecord is Map<*, *>) {
-                    val valMo = moRecord[requiredValue]//"cost_mission_order"]
+                    val valMo = moRecord[requiredValue]
                     if (valMo is Int) {
                         totalValMo += valMo.toDouble()
                     }
@@ -57,6 +78,29 @@ class db_data_collector() {
         //println("total costs in mo $mo : $totalValMo")
 
         return totalValMo
+    }
+
+    //get String values from mission order record regarding mo Id
+    fun getMissionOrderStringsRegardingMo(mo: String, requiredValue: String): MutableList<String> {
+        val valuesList = mutableListOf<String>()
+        // Call the rest function to find MO regarding moId
+        val restTemplate = RestTemplate()
+        val url = "$urlIndex/inv/findinvformo/{mo}"
+        val response = restTemplate.getForObject(url, List::class.java, mo)
+
+        // Map the JSON response to values
+        if (response != null && response.isNotEmpty()) {
+            for (moRecord in response) {
+                if (moRecord is Map<*, *>) {
+                    val valMo = moRecord[requiredValue]
+                    if (valMo is String) {
+                        valuesList.add(valMo)
+                    }
+                }
+            }
+        }
+
+        return valuesList
     }
 
     //get String values from mission order record regarding mo Id
@@ -136,6 +180,8 @@ class db_data_collector() {
 
         return partItem
     }
+
+
 }
 
 

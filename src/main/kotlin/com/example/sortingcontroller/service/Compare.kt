@@ -1,11 +1,8 @@
 package com.example.sortingcontroller.service
 
 import com.example.sortingcontroller.rest.db_data_collector
-import java.awt.geom.Arc2D
 
-@Suppress("UNREACHABLE_CODE")
 class Compare{
-
 
     class Parts {
         val db_collector = db_data_collector()
@@ -67,15 +64,18 @@ class Compare{
         val db_collector = db_data_collector()
         val calculate = Calculate()
 
+
+        //fun mainCompareTime(){
         // compare time tacts in MO and Inv
         // 1. compare val in mo if the value is equal to const standard #
         // --> if false recalculate recommended
+        // --> use ordered val in next calculations #
 
         // 2. compare inv and mo
-        // --> if false calculated difference for all invoices separately
-        // --> get wrong invoice
-        // --> calculate difference in hours
-        // --> calculate difference in sec/part
+        // --> if false calculated difference for all invoices separately #
+        // --> get wrong invoice #
+        // --> calculate difference in hours complete invoices X mo_values # in Calculate
+        // --> calculate difference in sec/part #
 
         fun compareSortingTimeInMo(mo:String): Boolean {
             val partMo: String = db_collector.get_part_from_mo(mo, "part")
@@ -87,17 +87,44 @@ class Compare{
             return isMoTactOK
         }
 
+        // trigger for next comparation
         fun compareSortingTimeInvMo(mo:String):Boolean {
             val sortingTimeInv: Double = db_collector.get_invoice_value_for_mo(mo, "sorting_time")
             val sortingTimeMo: Double = db_collector.get_mission_order_value_regarding_mo(mo, "time_tact")
             return (sortingTimeInv == sortingTimeMo)
         }
 
-        fun compareSortingTimeInvMO(timeInv: Double):Double {
-            // compare tact time through invoice
-            return TODO()
-        }
+        // compare times in invoices
+        fun compareSortingTimeInvMO(mo:String):Double {
+            val invoices : MutableList<String> = db_collector.getMissionOrderStringsRegardingMo(
+                mo = mo,
+                requiredValue = "invoice_number"
+            )
+            println("INVOICES: $invoices")
 
+            //values from mo for const result
+            var secondDiffPerPart: Double = 0.0
+            val part : String = db_collector.get_part_from_mo(mo, "part")
+            val timeToSort : Double = db_collector.get_mission_order_value_regarding_mo(mo,"time_tact")
+            val amountToSort : Int  = db_collector.get_mission_order_value_regarding_mo(mo, "amount_mo").toInt()
+            val const: Boolean = compareTimeWithConstTimeTact(part, timeToSort, amountToSort)
+
+            // for each invoice in list compare the time to sort and convert to the sec/part return sec diff
+            for (invoice in invoices){
+
+                val hours = db_collector.getInvoiceValueForInvoice(invoice, "sorting_time")
+                val amount: Double = db_collector.getInvoiceValueForInvoice(invoice, "amount_inv")
+
+                // compare sec/part times
+                secondDiffPerPart = compareSecondPerPart(part, hours, amount, const, mo)
+                println("for invoice $invoice, is the diff in sec/part $secondDiffPerPart s" )
+
+
+            }
+            // compare tact time through invoice
+            //TODO(return in hashmap for next use )
+            return secondDiffPerPart
+        }
 
         // compare time in mo or inv with const time tact (!time to manipulation included!)
         fun compareTimeWithConstTimeTact(part:String, timeToSort: Double, amountToSort: Int): Boolean {
@@ -107,17 +134,22 @@ class Compare{
             val timeTactDiff : Double = calculatedTimeTact - constTimeTact
             println("difference in timetact is $timeTactDiff against the constant $constTimeTact")
 
-            return (constTimeTact == calculatedTimeTact
+            return constTimeTact == calculatedTimeTact
         }
 
         // compare seconds per part with constant value
-        fun compareSecondPerPart(part:String, hours: Double, amount: Int): Double {
-            val constSecondPerPart : Double = db_collector.get_part_value_to_sort(part,"time_to_sort")
+
+        fun compareSecondPerPart(part:String, hours: Double, amount: Double, const: Boolean, mo: String): Double {
+            var constSecondPerPart : Double = 0.0
+            // if the value of takt time in mission order is the same as standard in part record in db
+            if (const) {
+                constSecondPerPart = db_collector.get_part_value_to_sort(part, "time_to_sort")
+            // otherwise use the value from mission order
+            } else {
+                constSecondPerPart = db_collector.get_mission_order_value_regarding_mo(mo, "time_tact" )
+            }
             val calculatedSecondPerPart: Double = calculate.calculateSecondPerPart(hours, amount)
             return constSecondPerPart - calculatedSecondPerPart
         }
-
-        
-
     }
 }

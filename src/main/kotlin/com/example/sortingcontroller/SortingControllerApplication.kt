@@ -14,18 +14,11 @@ fun main(args: Array<String>) {
 val calculate = Calculate()
 val mo = "MO2"
 calculate.calculateDiffInvMo(mo)
-// @test
-
 
 calculate.calculateDifferencePartAmount(mo)
 
-val part = "GB LHD"
-val time : Double = 20.6
-val amount : Int = 1000
-
 val compareTime = Compare.SortingTime()
-println(compareTime.compareTimeWithConstTimeTact(part, time, amount))
 
-compareTime.compareSortingTimeInMo(mo)
+compareTime.compareSortingTimeInvMO(mo)
 
 }
