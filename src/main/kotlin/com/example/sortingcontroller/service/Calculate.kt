@@ -1,11 +1,11 @@
 package com.example.sortingcontroller.service
 
-import com.example.sortingcontroller.rest.db_data_collector
+import com.example.sortingcontroller.rest.DB_data_collector
 
 //class to simple base calculation
 class Calculate(){
 
-    val db_collector = db_data_collector()
+    val db_collector = DB_data_collector()
     val CONST_AMOUNT_TO_SORT : Double = 100.0
 
 
@@ -16,7 +16,7 @@ class Calculate(){
         val cost_mo : Double = db_collector.get_mission_order_value_regarding_mo(mo_from_invoice, "cost_mission_order")
         // calculate difference
         val sum_cost: Double = cost_invoice - cost_mo
-        println("difference between costs is $sum_cost")
+        //println("difference between costs is $sum_cost")
         return sum_cost
     }
 
@@ -26,7 +26,7 @@ class Calculate(){
         val amount_invoice : Double = db_collector.get_invoice_value_for_mo(mo_from_invoice, "amount_inv")
         val amount_mo : Double = db_collector.get_mission_order_value_regarding_mo(mo_from_invoice, "amount_mo")
         val dif_amount: Double = amount_invoice - amount_mo
-                println("amount difference is $dif_amount in invoice")
+        //println("amount difference is $dif_amount in invoice")
         return dif_amount
     }
 
@@ -37,7 +37,7 @@ class Calculate(){
         val timeToManipulation = db_collector.get_part_value_to_sort(part, "time_to_manipulation")
         val secToSort : Double = CONST_AMOUNT_TO_SORT * (timeToSort + timeToManipulation)
         val hoursToSort = secToSort/3600
-        println ("for amount of $CONST_AMOUNT_TO_SORT $part mentioned in mo is necessary $hoursToSort hours to sort")
+        //println ("for amount of $CONST_AMOUNT_TO_SORT $part mentioned in mo is necessary $hoursToSort hours to sort")
         return hoursToSort
     }
 

@@ -1,11 +1,11 @@
 package com.example.sortingcontroller.service
 
-import com.example.sortingcontroller.rest.db_data_collector
+import com.example.sortingcontroller.rest.DB_data_collector
 
 class Compare{
 
     class Parts {
-        val db_collector = db_data_collector()
+        val db_collector = DB_data_collector()
 
         //compare if there are the same part issued in the Inv and MO
         //TODO() všechny záznamy do db .toLower() ukládání přes fuzzy a compare z part dat
@@ -61,7 +61,7 @@ class Compare{
     }
 
     class SortingTime{
-        val db_collector = db_data_collector()
+        val db_collector = DB_data_collector()
         val calculate = Calculate()
 
 
@@ -95,12 +95,12 @@ class Compare{
         }
 
         // compare times in invoices
-        fun compareSortingTimeInvMO(mo:String):Double {
+        fun compareSortingTimeInvMO(mo:String):Map<String, Double> {
             val invoices : MutableList<String> = db_collector.getMissionOrderStringsRegardingMo(
                 mo = mo,
                 requiredValue = "invoice_number"
             )
-            println("INVOICES: $invoices")
+            //println("INVOICES: $invoices")
 
             //values from mo for const result
             var secondDiffPerPart: Double = 0.0
@@ -110,6 +110,7 @@ class Compare{
             val const: Boolean = compareTimeWithConstTimeTact(part, timeToSort, amountToSort)
 
             // for each invoice in list compare the time to sort and convert to the sec/part return sec diff
+            val resultInvSec: MutableMap<String, Double> = HashMap()
             for (invoice in invoices){
 
                 val hours = db_collector.getInvoiceValueForInvoice(invoice, "sorting_time")
@@ -117,13 +118,14 @@ class Compare{
 
                 // compare sec/part times
                 secondDiffPerPart = compareSecondPerPart(part, hours, amount, const, mo)
-                println("for invoice $invoice, is the diff in sec/part $secondDiffPerPart s" )
+                resultInvSec[invoice] = secondDiffPerPart
+                //println("for invoice $invoice, is the diff in sec/part $secondDiffPerPart s" )
+
 
 
             }
-            // compare tact time through invoice
-            //TODO(return in hashmap for next use )
-            return secondDiffPerPart
+            //println(resultInvSec)
+            return resultInvSec // hashmap
         }
 
         // compare time in mo or inv with const time tact (!time to manipulation included!)
@@ -131,8 +133,8 @@ class Compare{
             val constHoursToSort: Double = calculate.calculateConstSortTime(part)
             val constTimeTact: Double = calculate.calculateConstTimeTact(constHoursToSort)
             val calculatedTimeTact : Double = calculate.calculateSortTimeTact(timeToSort, amountToSort)
-            val timeTactDiff : Double = calculatedTimeTact - constTimeTact
-            println("difference in timetact is $timeTactDiff against the constant $constTimeTact")
+            //val timeTactDiff : Double = calculatedTimeTact - constTimeTact
+            //println("difference in timetact is $timeTactDiff against the constant $constTimeTact")
 
             return constTimeTact == calculatedTimeTact
         }
