@@ -3,13 +3,13 @@ package com.example.sortingcontroller.service
 import com.example.sortingcontroller.rest.DB_data_collector
 
 //class to simple base calculation
-class Calculate(){
+class Calculate{
 
-    val db_collector = DB_data_collector()
+    var db_collector = DB_data_collector()
     val CONST_AMOUNT_TO_SORT : Double = 100.0
 
 
-    //calculate difference between mo and invoice (mo_from_invoice)
+    //calculate cost difference between mo and invoice (mo_from_invoice)
     fun calculateDiffInvMo(mo_from_invoice:String): Double {
         //get values from mo and invoice s regarding mo Id
         val cost_invoice : Double = db_collector.get_invoice_value_for_mo(mo_from_invoice, "cost_invoice")
@@ -46,7 +46,7 @@ class Calculate(){
         return CONST_AMOUNT_TO_SORT/constHour
     }
 
-    //calculate sorting time from given values
+    //calculate sorting time tact from given values
     fun calculateSortTimeTact(hoursToSort: Double, amountOfParts: Int): Double {
         return amountOfParts / hoursToSort
     }
@@ -62,5 +62,7 @@ class Calculate(){
         val sortingTimeMo: Double = db_collector.get_mission_order_value_regarding_mo(mo, "time_tact")
         return (sortingTimeInv - sortingTimeMo)
     }
+
+
 
 }

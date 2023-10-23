@@ -1,7 +1,7 @@
 package com.example.sortingcontroller.rest
 import org.springframework.web.client.RestTemplate
 
-class DB_data_collector() {
+class DB_data_collector {
 
 
     // class with functions to get values in needed types from rest endpoints

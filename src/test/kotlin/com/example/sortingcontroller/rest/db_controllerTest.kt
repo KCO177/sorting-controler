@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Assertions.*
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 
 // TODO nesting tests to necessary ordered and default ordered
+// TODO display test better descriptions
 class db_controllerTest {
 
     @Autowired

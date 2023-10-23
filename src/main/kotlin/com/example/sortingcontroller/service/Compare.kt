@@ -5,11 +5,11 @@ import com.example.sortingcontroller.rest.DB_data_collector
 class Compare{
 
     class Parts {
-        val db_collector = DB_data_collector()
+        var db_collector = DB_data_collector()
 
         //compare if there are the same part issued in the Inv and MO
         //TODO() všechny záznamy do db .toLower() ukládání přes fuzzy a compare z part dat
-        //TODO() celý blok hledani part a podmínky, převody řešit na inputu do db - > čistá db
+        //TODO() celý blok hledani part a podmínky, převody řešit na inputu do db -> čistá db
 
         fun compare_parts(mo_from_invoice: String): Boolean {
             var result: Boolean = comparePartNumbersIssuedInMoInv(mo_from_invoice)
@@ -25,7 +25,7 @@ class Compare{
             val part_number_inv: String = db_collector.get_part_from_inv(mo_from_invoice, "part_number_invoice")
             val part_number_mo: String = db_collector.get_part_from_mo(mo_from_invoice, "part_number_mission_order")
             //println("part_number_mo: $part_number_mo , part_number_inv $part_number_inv")
-            val result: Boolean = compareParts(part_number_inv, part_number_mo)
+            val result: Boolean = matchParts(part_number_inv, part_number_mo)
             //println("result for match part numbers is $result")
             if (result == true) {
                 return result
@@ -33,7 +33,7 @@ class Compare{
                 // check if the number match with record in part database
 
                 val part_number_match: String = db_collector.get_part_value(part_number_inv, "part_number")
-                val matchedResult: Boolean = compareParts(part_number_match, part_number_mo)
+                val matchedResult: Boolean = matchParts(part_number_match, part_number_mo)
                 return matchedResult
             }
         }
@@ -42,7 +42,7 @@ class Compare{
             //check the part names - should be different because of different numbering system in plants
             val part_name_inv: String = db_collector.get_part_from_inv(mo_from_invoice, "part")
             val part_name_mo: String = db_collector.get_part_from_mo(mo_from_invoice, "part")
-            val result: Boolean = compareParts(part_name_inv, part_name_mo)
+            val result: Boolean = matchParts(part_name_inv, part_name_mo)
             if (result == true) {
                 return result
             } else {
@@ -50,12 +50,12 @@ class Compare{
                 val inv_part_record_match: String = db_collector.get_part_value(part_name_inv, "part_number")
                 val mo_part_record_match: String = db_collector.get_part_value(part_name_mo, "part_number")
                 //compare numbers from match
-                val matchedResult: Boolean = compareParts(mo_part_record_match, inv_part_record_match)
+                val matchedResult: Boolean = matchParts(mo_part_record_match, inv_part_record_match)
                 return matchedResult
             }
         }
 
-        fun compareParts(partNumberInv: String, partNumberMo: String): Boolean {
+        fun matchParts(partNumberInv: String, partNumberMo: String): Boolean {
             return (partNumberInv == partNumberMo)
         }
     }
