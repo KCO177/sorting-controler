@@ -1,7 +1,7 @@
 package com.example.sortingcontroller
 
-import com.example.sortingcontroller.service.Calculate
-import com.example.sortingcontroller.service.Compare
+import com.example.sortingcontroller.service.input.OCRPdf
+import com.example.sortingcontroller.service.input.OpenFile
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
@@ -10,6 +10,7 @@ class SortingControllerApplication
 
 fun main(args: Array<String>) {
     runApplication<SortingControllerApplication>(*args)
+
 
 
 }

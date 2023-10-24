@@ -1,6 +1,7 @@
 package com.example.sortingcontroller.service
 
 import com.example.sortingcontroller.rest.DB_data_collector
+import com.example.sortingcontroller.service.output.Compare
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DisplayName

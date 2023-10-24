@@ -2,8 +2,9 @@ package com.example.sortingcontroller.frontendRoot
 import com.example.sortingcontroller.rest.DB_data_collector
 import com.example.sortingcontroller.rest.ViewInvoice
 import com.example.sortingcontroller.rest.ViewMission
-import com.example.sortingcontroller.service.Calculate
-import com.example.sortingcontroller.service.Compare
+import com.example.sortingcontroller.service.input.ReadPdf
+import com.example.sortingcontroller.service.output.Calculate
+import com.example.sortingcontroller.service.output.Compare
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -105,12 +106,18 @@ class HttpController(
 
     @GetMapping("/addnew")
     fun dragNdrop(@RequestParam(required = false, defaultValue = "") fileName: String): String {
+        val readPDF = ReadPdf()
         // Process the file name as needed
         println("Received file name: $fileName")
 
+        //check if the file exists in default folder and run the ocr analysis
+        val file:String = fileName
+        readPDF.readPdfFile(file)
         // Return the response or render the appropriate view
         return "dragNdrop"
     }
+
+
 
 }
 
