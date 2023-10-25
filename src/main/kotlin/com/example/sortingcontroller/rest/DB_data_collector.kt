@@ -209,6 +209,29 @@ class DB_data_collector {
         return moSet
     }
 
+    //TODO add to test
+    fun get_all_part_numbers(partValueKind: String):Set<String>{
+        val partNumberSet = mutableSetOf<String>()
+        // Call the rest function to find MO regarding moId
+        val restTemplate = RestTemplate()
+        val url = "$urlIndex/part/all"
+        val response = restTemplate.getForObject(url, List::class.java)
+
+        // Map the JSON response to values
+        if (response != null && response.isNotEmpty()) {
+            for (partRecord in response) {
+                if (partRecord is Map<*, *>) {
+                    val valPart = partRecord[partValueKind]
+                    if (valPart is String) {
+                        partNumberSet.add(valPart)
+                    }
+                }
+            }
+        }
+
+        return partNumberSet
+    }
+
 
 
 

@@ -24,16 +24,25 @@ class OCRPdf {
         return outputImageFile
     }
 
-    fun performOCR(pdfFile: String, dpi: Int = defaultDPI ): String {
+    fun performOCR(pdfFile: String, dpi: Int = defaultDPI ): MutableList<String> {
 
+        val results = mutableListOf<String>()
         val imageFile = convertPdfToImage(File(defaultPdfFilePath+pdfFile), dpi)
         val tesseract: ITesseract = Tesseract()
         tesseract.setDatapath(tesseractPath)
         tesseract.setLanguage("eng")
         tesseract.setTessVariable("user_defined_dpi", "300")
         val recognisedText = tesseract.doOCR(imageFile)
-        println(recognisedText)
-        return recognisedText
+        val rows = recognisedText.split('\n')
+        results.addAll(rows)
+        //println(results)
+
+        if (imageFile.exists()) {
+            imageFile.delete()
+            println("Image file deleted")
+        }
+
+        return results
     }
 
 

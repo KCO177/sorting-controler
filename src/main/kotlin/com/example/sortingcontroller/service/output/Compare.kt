@@ -39,6 +39,7 @@ class Compare{
             }
         }
 
+
         fun comparePartNamesIssuedinMoInv(mo_from_invoice: String): Boolean {
             //check the part names - should be different because of different numbering system in plants
             val part_name_inv: String = db_collector.get_part_from_inv(mo_from_invoice, "part")
