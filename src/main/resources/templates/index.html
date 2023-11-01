@@ -18,9 +18,28 @@
 </head>
 
 <body>
-  <div class="text-center">
-    <h1>Sorting controlling</h1>
-  </div>
+
+<div class="text-center mt-3">
+  <h2>SORTING CONTROLLING</h2>
+</div>
+
+<div class="d-flex justify-content-center">
+  <ul class="nav nav-pills flex-column flex-sm-row">
+    <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="sorting">Controlling</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="addnew">Add New</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link disabled" href="#">Update</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link disabled" href="#">Settings</a>
+    </li>
+  </ul>
+</div>
+
 
 
 
@@ -31,114 +50,110 @@
         }
       </style>
 
-      <!--<div class="centered-block">-->
-      <div class="container w-70 pt-5">
-        <div class="centered-block">
-          <h3>Manage Mission Orders</h3>
 
-          <form id="sortingForm" action="/sorting" method="get">
-            <label for="mo">Enter MO:</label>
-            <input type="text" id="mo" name="mo" required>
-            <button type="submit">Calculate</button>
-          </form>
+<div class="container pt-5">
+  <div class="centered-block">
+    <div class="text-center">
+      <h3>check invoices and orders conformity</h3>
 
-          <div th:if="${costDifference != null}">
-            <p th:text="${'Difference in costs is: ' + costDifference}"></p>
-          </div>
 
-          <div th:if="${amountDifference != null}">
-            <p th:text="${'Difference in amount is: ' + amountDifference}"></p>
-          </div>
 
-          <div th:if="${timeDifferences != null}">
-            <p th:text="${'Difference in amount is: ' + timeDifference}"></p>
-          </div>
-
-          <p>Differences in costs:</p>
-          <ul>
-            <li th:each="difference : ${costDifferences}" th:text="${'Cost difference: ' + difference}"></li>
-          </ul>
-
-          <p>Differences in amounts:</p>
-          <ul>
-            <li th:each="difference : ${amountDifferences}" th:text="${'Amount difference: ' + difference}"></li>
-          </ul>
-
-          <p>Differences in sorting time:</p>
-          <ul>
-            <li th:each="difference : ${timeDifferences}" th:text="${'Time difference: ' + difference}"></li>
-          </ul>
-
-          <div th:if="${secondPerPartDifferences != null and not #maps.isEmpty(secondPerPartDifferences)}">
-            <p>Differences in sorting time:</p>
-            <ul>
-              <li th:each="entry : ${secondPerPartDifferences.entrySet()}">
-                <span th:text="${'Invoice ' + entry.key + ' : ' + entry.value + ' sec/part difference'}"></span>
-              </li>
-            </ul>
-          </div>
-
-          <div th:if="${message != null}" th:text="${message}" class="error-message"></div>
-
-        </div>
-      </div>
-
-      <div class="container w-70 pt-5">
-        <h3>Sorting orders</h3>
-          <table id="moTable" class="table table-bordered table-striped table-primary">
-            <thead>
-              <tr>
-                <th>mission_order_id</th>
-                <th>date</th>
-                <th>cost_mission_order</th>
-                <th>part</th>
-                <th>part_number_mission_order</th>
-                <th>amount_mo</th>
-                <th>sorting time</th>
-              </tr>
-            </thead>
-            <tbody>
-            <tr th:each="item : ${ordersData}">
-              <td th:text="${item.mission_order_id}"/>
-              <td th:text="${item.date}"/>
-              <td th:text="${item.cost_mission_order}"/>
-              <td th:text="${item.part}"/>
-              <td th:text="${item.part_number_mission_order}"/>
-              <td th:text="${item.amount_mo}"/>
-              <td th:text="${item.time_tact}"/>
-            </tr>
-            </tbody>
-        </table>
-      </div>
-
-      <div class="container w-70 pt-5">
-        <h3>Invoices</h3>
-        <table id="invTable" class="table table-bordered table-striped table-primary">
-          <thead>
-          <tr>
-            <th>mission_order_id</th>
-            <th>invoice_number</th>
-            <th>date</th>
-            <th>cost_invoice</th>
-            <th>part</th>
-            <th>amount_inv</th>
-            <th>sorting_time</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr th:each="item : ${invoicesData}">
-            <td th:text="${item.mission_order_id}"/>
-            <td th:text="${item.invoice_number}"/>
-            <td th:text="${item.date}"/>
-            <td th:text="${item.cost_invoice}"/>
-            <td th:text="${item.part}"/>
-            <td th:text="${item.amount_inv}"/>
-            <td th:text="${item.sorting_time}"/>
-          </tr>
-          </tbody>
-        </table>
-      </div>
+      <form id="sortingForm" action="/sorting" method="get">
+        <label for="mo">Enter MO:</label>
+        <input type="text" id="mo" name="mo" required>
+        <button type="submit">Calculate</button>
+      </form>
     </div>
+
+
+    <div class="text-center mt-3">
+
+    <div id="orderValueDisplay" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <p th:if="${param.mo}"><b>The different for order : </b><span th:text="' ' + ${param.mo}"></span></p>
+    </div>
+
+
+    <p th:each="difference : ${costDifferences}" th:utext="'<b>Cost difference:</b> ' + ${difference + ' €'}"></p>
+
+    <p th:each="difference : ${amountDifferences}" th:utext="'<b>Amount difference:</b> ' + ${difference + ' parts'}"></p>
+
+    <p th:each="difference : ${timeDifferences}" th:utext="'<b>Time difference:</b> ' + ${difference + ' hours'}"></p>
+
+    <div th:if="${secondPerPartDifferences != null and not #maps.isEmpty(secondPerPartDifferences)}">
+      <p><b>Differences in sorting time:</b></p>
+        <p th:each="entry : ${secondPerPartDifferences.entrySet()}">
+          <span th:text="${'Invoice ' + entry.key + ' : ' + entry.value + ' sec/part difference'}"></span>
+        </p>
+    </div>
+
+    <div th:if="${message != null}" th:text="${message}" class="error-message"></div>
+
+  </div>
+</div>
+
+
+  <h3>Sorting orders</h3>
+  <table id="moTable" class="table table-bordered table-striped table-primary">
+    <thead>
+    <tr>
+      <th>mission_order_id</th>
+      <th>date</th>
+      <th>cost_mission_order</th>
+      <th>part</th>
+      <th>part_number_mission_order</th>
+      <th>amount_mo</th>
+      <th>sorting time</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${ordersData}">
+      <td th:text="${item.mission_order_id}"/>
+      <td th:text="${item.date}"/>
+      <td th:text="${item.cost_mission_order}"/>
+      <td th:text="${item.part}"/>
+      <td th:text="${item.part_number_mission_order}"/>
+      <td th:text="${item.amount_mo}"/>
+      <td th:text="${item.time_tact}"/>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="container w-70 pt-5">
+      <h3>Invoices</h3>
+      <table id="invTable" class="table table-bordered table-striped table-primary">
+        <thead>
+        <tr>
+          <th>mission_order_id</th>
+          <th>invoice_number</th>
+          <th>date</th>
+          <th>cost_invoice</th>
+          <th>part</th>
+          <th>amount_inv</th>
+          <th>sorting_time</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${invoicesData}">
+          <td th:text="${item.mission_order_id}"/>
+          <td th:text="${item.invoice_number}"/>
+          <td th:text="${item.date}"/>
+          <td th:text="${item.cost_invoice}"/>
+          <td th:text="${item.part}"/>
+          <td th:text="${item.amount_inv}"/>
+          <td th:text="${item.sorting_time}"/>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+
+<!-- Footer section -->
+<footer class="footer text-center py-2" style=" color: #CCCCCC;">
+  <p> Petr Koscelník 2023</p>
+</footer>
 
 
 
@@ -153,5 +168,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
 
 
-</body>
 </html>

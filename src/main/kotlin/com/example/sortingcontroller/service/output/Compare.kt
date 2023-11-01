@@ -32,13 +32,11 @@ class Compare{
                 return result
             } else {
                 // check if the number match with record in part database
-
                 val part_number_match: String = db_collector.get_part_value(part_number_inv, "part_number")
                 val matchedResult: Boolean = matchParts(part_number_match, part_number_mo)
                 return matchedResult
             }
         }
-
 
         fun comparePartNamesIssuedinMoInv(mo_from_invoice: String): Boolean {
             //check the part names - should be different because of different numbering system in plants

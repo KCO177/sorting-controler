@@ -1,65 +1,71 @@
 package com.example.sortingcontroller.service.input
 
-import org.apache.pdfbox.Loader
-import org.apache.pdfbox.text.PDFTextStripper
-import java.io.File
-import java.io.IOException
-import java.util.regex.Pattern
+import com.example.sortingcontroller.rest.CreateInvoice
+import com.example.sortingcontroller.rest.DB_data_collector
 
 
 class ReadPdf {
     fun readPdfFile(file: String): Any {
-        //val defaultFile: String = "Facture n°2022121018 - ASCORIUMMOST.pdf"
 
         val openFile = OpenFile()
         val fileList = openFile.getFileList()
-        var textList: MutableList<String> = mutableListOf()
-        val itemsFromPDf:String
+        var textList: List<String> = mutableListOf<String>()
+        val itemsFromPDf: CreateInvoice
         println("file $file exists: ")
-        println(openFile.getFileIfExists(fileList, file))
+        //println(openFile.getFileIfExists(fileList, file))
 
         if (openFile.getFileIfExists(fileList, file)) {
             val ocr = OCRPdf()
             textList = ocr.performOCR(pdfFile = file)
-            /*if (textList.isNotEmpty()){
+            if (textList.isNotEmpty()) {
+                //println(textList)
                 val analyse = AnalysePdf()
-                itemsFromPDf = analyse.findItemsInv(textList).toString()
-                return itemsFromPDf
-            }*/
-            println(textList)
-        }
+                val postToDb = DB_data_collector()
+                val setSettings = SetSettings()
+                val pdfIsInv = setSettings.factureInFileName(file)
+                println("pdfIsInv $pdfIsInv")
+                //todo € comma supplier list
+                val commaThousandSuppliers : MutableList<String> = mutableListOf("cps")
 
-            return textList
+                // check if mo or inv
+
+                val supplierExists = setSettings.supplierExists(textList, pdfIsInv)
+                return if (supplierExists) {
+                    //println("supplier exist $supplierExists")
+                    val supplier = setSettings.findSupplier(textList, pdfIsInv)
+                    println("supplier $supplier")
+                    val settings = setSettings.getSettings(supplier)
+                    println("settings $settings")
+                    if (supplier in commaThousandSuppliers){
+                        textList = analyse.processEuroStrings(textList)}
+
+                    //TODO before post check if the inv or mo exists already
+
+                    if (pdfIsInv) {
+                        postToDb.postNewInv(analyse.findItemsInv(textList, settings))
+                    }else{
+                        postToDb.postNewMo(analyse.findItemsMo(textList, settings))
+                    }
+
+
+                } else {
+                    "supplier does not exists"
+                }
+                //println(textList)
+            } else {
+                return "file does not exists"
+            }
+
+
         }
+        return "file does not exists"
+    }
 }
 
 
 
-    /*fun readPdfMethod(filePath: String) {
-        try {
-            val file = File(filePath)
-            if (file.exists()) {
 
-                val document = Loader.loadPDF(file)
-                val pdfStripper = PDFTextStripper()
-                val text = pdfStripper.getText(document)
-                document.close()
-                println(text)
-                println("from fun readPdfFile endpoint")
-            } else {
-                println("File does not exist.")
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }*/
 
-    // tabulas implemenation DONE - lepsi vysledek poskztuje OCR
-    //TODO make supplier settings table
-    //TODO try to read pdf with readPDfMethod ifEmpty:
-    //TODO with OCR, read supplier name, set settings according to the specific names for the supplier
-    //TODO read OCR extract items to list
-    //TODO post list items to db
 
 
 

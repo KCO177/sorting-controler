@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <changeSet id="05" author="KCO177">
+        <createTable tableName="settings_table">
+            <column name="supplier" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="supplier_code_mo" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="mission_order_id_mo" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="date_mo" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="cost_mision_order_mo" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="part_mo" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="part_number_mission_order" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="amount_mo" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="sorting_time_mo" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="supplier_inv" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="mission_order_id_inv" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="invoice_number_inv" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="date_inv" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="cost_invoice_inv" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="part_inv" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="amount_inv_inv" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="sorting_time_inv" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="time_tact" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

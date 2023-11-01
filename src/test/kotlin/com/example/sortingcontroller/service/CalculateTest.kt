@@ -26,7 +26,7 @@ class CalculateTest {
         `when`(dbCollector.get_mission_order_value_regarding_mo(mo, "cost_mission_order")).thenReturn(50.0)
 
         // Set the mock DB_data_collector in the calculator
-        calculator.db_collector = dbCollector
+        calculator.dbCollector = dbCollector
 
         val result: Double = calculator.calculateDiffInvMo(mo)
         assertEquals(50.0, result, "Failed to calculate cost difference!")
@@ -43,7 +43,7 @@ class CalculateTest {
         `when`(dbCollector.get_mission_order_value_regarding_mo(mo, "amount_mo")).thenReturn(50.0)
 
         // Set the mock DB_data_collector in the calculator
-        calculator.db_collector = dbCollector
+        calculator.dbCollector = dbCollector
 
         val result: Double = calculator.calculateDifferencePartAmount(mo)
         assertEquals(50.0, result, "Failed to calculate amount of parts difference!")
@@ -58,7 +58,7 @@ class CalculateTest {
         `when`(dbCollector.get_part_value_to_sort(part, "time_to_manipulation")).thenReturn(3.0)
 
         // Set the mock DB_data_collector in the calculator
-        calculator.db_collector = dbCollector
+        calculator.dbCollector = dbCollector
 
         val result: Double = calculator.calculateConstSortTime(part)
         assertEquals(0.5, result, "Failed to calculate constant time for 100 parts!")
@@ -96,7 +96,7 @@ class CalculateTest {
         `when`(dbCollector.get_mission_order_value_regarding_mo(mo, "time_tact")).thenReturn(50.0)
 
         // Set the mock DB_data_collector in the calculator
-        calculator.db_collector = dbCollector
+        calculator.dbCollector = dbCollector
 
         val result: Double = calculator.calculateDiffSortingTimeInvMo(mo)
         assertEquals(50.0, result, "Failed to calculate sorting times difference in inv and mo!")

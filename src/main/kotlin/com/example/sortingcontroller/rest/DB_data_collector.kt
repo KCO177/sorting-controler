@@ -209,7 +209,8 @@ class DB_data_collector {
         return moSet
     }
 
-    //TODO add to test
+    //TODO add to tests:
+    //get all part values according kind of part value
     fun get_all_part_numbers(partValueKind: String):Set<String>{
         val partNumberSet = mutableSetOf<String>()
         // Call the rest function to find MO regarding moId
@@ -232,11 +233,89 @@ class DB_data_collector {
         return partNumberSet
     }
 
+    // posting new invoice used by dragNdrop front end functionality
+    fun postNewInv(createInvoice: CreateInvoice) {
+        val url = "http://localhost:8080/inv/post"
 
+        val restTemplate = RestTemplate()
+        val response = restTemplate.postForEntity(url, createInvoice, String::class.java)
 
+        if (response.statusCode.is2xxSuccessful) {
+            println("POST request was successful.")
+        } else {
+            println("POST request failed with status code: ${response.statusCode}")
+        }
+    }
 
+    // posting new order used by dragNdrop front end functionality
+    fun postNewMo(createMissionOrder: CreateMissionOrder) {
+        val url = "http://localhost:8080/mo/post"
+
+        val restTemplate = RestTemplate()
+        val response = restTemplate.postForEntity(url, createMissionOrder, String::class.java)
+
+        if (response.statusCode.is2xxSuccessful) {
+            println("POST request was successful.")
+        } else {
+            println("POST request failed with status code: ${response.statusCode}")
+        }
+    }
+
+    // get set of all suppliers in settings table
+    fun get_all_suppliers(supplierValue : String):Set<String>{
+        val supplierSet = mutableSetOf<String>()
+        // Call the rest function to find MO regarding moId
+        val restTemplate = RestTemplate()
+        val url = "$urlIndex/settings/all"
+        val response = restTemplate.getForObject(url, List::class.java)
+
+        // Map the JSON response to values
+        if (response != null && response.isNotEmpty()) {
+            for (supRecord in response) {
+                if (supRecord is Map<*, *>) {
+                    val valSup = supRecord[supplierValue]
+                    if (true) {
+                        supplierSet.add(valSup.toString())
+                    }
+                }
+            }
+        }
+
+        return supplierSet
+    }
+
+    // get current settings for supplier
+    fun getSettings(supplier: String): HashMap<String, String> {
+        val restTemplate = RestTemplate()
+        val url = "$urlIndex/settings/find/{supplier}"
+        val response = restTemplate.getForObject(url, List::class.java, supplier)
+
+        val settingsMap = HashMap<String, String>()
+
+        if (response != null) {
+            for (supRecord in response) {
+                if (supRecord is Map<*, *>) {
+                    @Suppress("UNCHECKED_CAST")
+                    val recordMap = supRecord as Map<String, String>
+                    // Extract the key-value pairs from the recordMap and add them to the settingsMap
+                    settingsMap.putAll(recordMap)
+                }
+            }
+        }
+
+        return settingsMap
+    }
 
 }
+
+
+
+
+
+
+
+
+
 
 
 
